@@ -146,19 +146,31 @@ if git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 session_duration=""
-session_start=$(echo "$input" | jq -r '.session.start_time // empty')
-if [ -n "$session_start" ] && [ "$session_start" != "null" ]; then
-    start_epoch=$(iso_to_epoch "$session_start")
-    if [ -n "$start_epoch" ]; then
-        now_epoch=$(date +%s)
-        elapsed=$(( now_epoch - start_epoch ))
-        if [ "$elapsed" -ge 3600 ]; then
-            session_duration="$(( elapsed / 3600 ))h$(( (elapsed % 3600) / 60 ))m"
-        elif [ "$elapsed" -ge 60 ]; then
-            session_duration="$(( elapsed / 60 ))m"
-        else
-            session_duration="${elapsed}s"
+elapsed=""
+
+total_duration_ms=$(echo "$input" | jq -r '.cost.total_duration_ms // empty')
+if [ -n "$total_duration_ms" ] && [ "$total_duration_ms" != "null" ] && [ "$total_duration_ms" -gt 0 ] 2>/dev/null; then
+    elapsed=$(( total_duration_ms / 1000 ))
+fi
+
+if [ -z "$elapsed" ]; then
+    session_start=$(echo "$input" | jq -r '.session.start_time // empty')
+    if [ -n "$session_start" ] && [ "$session_start" != "null" ]; then
+        start_epoch=$(iso_to_epoch "$session_start")
+        if [ -n "$start_epoch" ]; then
+            now_epoch=$(date +%s)
+            elapsed=$(( now_epoch - start_epoch ))
         fi
+    fi
+fi
+
+if [ -n "$elapsed" ] && [ "$elapsed" -gt 0 ] 2>/dev/null; then
+    if [ "$elapsed" -ge 3600 ]; then
+        session_duration="$(( elapsed / 3600 ))h$(( (elapsed % 3600) / 60 ))m"
+    elif [ "$elapsed" -ge 60 ]; then
+        session_duration="$(( elapsed / 60 ))m"
+    else
+        session_duration="${elapsed}s"
     fi
 fi
 
