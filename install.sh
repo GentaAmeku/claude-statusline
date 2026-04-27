@@ -5,7 +5,7 @@ CLAUDE_DIR="$HOME/.claude"
 STATUSLINE_DEST="$CLAUDE_DIR/statusline.sh"
 SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || echo "")"
-RAW_URL="${RAW_URL:-https://raw.githubusercontent.com/<USERNAME>/<REPO>/main/statusline.sh}"
+RAW_URL="${RAW_URL:-https://raw.githubusercontent.com/GentaAmeku/claude-statusline/main/statusline.sh}"
 
 echo "==> Claude Statusline インストーラー"
 echo ""
